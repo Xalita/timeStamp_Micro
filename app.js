@@ -46,41 +46,38 @@ app.get ('/', (req,res,next)=> {
 })
 
 
-let reqObj = {};
+app.get ('/api', (req,res)=> {
+    res.json({
+        unix: new Date ().getTime(),
+        utc: new Date ().toUTCString()
+    })
+})
 
-app.get ('/api/:date', (req,res,next) => {
+app.get ('/api/:date_str', (req,res,next) => {
     
-    let {date} = req.params;
+    let {date_str} = req.params;
 
+    let date = new Date (date_str);
 
-    if (date.includes('-')) {
-        reqObj.unix = new Date(date).getTime();
-        reqObj.utc = new Date(date).toUTCString();
-        console.log (date);
-    } else {
-        date = parseInt(date);
-        console.log (date);
-        reqObj.unix = new Date(date).getTime();
-        reqObj.utc = new Date(date).toUTCString();
+    if (date.toString() === 'Invalid Date') {
+        date = new Date(parseInt(date_str));
     };
 
-    if (!reqObj.unix || !reqObj.utc){
-        res.json({
+    if (date.toString() === 'Invalid Date') {
+        return res.json({
             error: 'Invalid Date'
         })
-
+    } else {
+        return res.json({
+            unix: date.getTime(),
+            utc: date.toUTCString()
+        })
     }
-    res.json(reqObj);
+
 })
 
 
-app.get ('/api', (req,res)=> {
 
-    reqObj.unix = new Date ().getTime();
-    reqObj.utc = new Date ().toUTCString();
-
-    res.json(reqObj)
-})
 
 
 
